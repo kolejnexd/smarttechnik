@@ -15,11 +15,17 @@ export default function SiteHeader() {
   const locale = getLocaleFromPath(pathname);
   const navContent = useMemo(() => getNavContent(locale), [locale]);
   const basePath = removeLocalePrefix(pathname) || '/';
+  
+  // Przygotowanie nawigacji z obsługą podstron (children)
   const localizedNav = useMemo(
     () =>
       navContent.navLinks.map((link) => ({
         ...link,
-        href: `${getLocalizedPath(link.pageId, locale)}${link.anchor ?? ''}`
+        href: `${getLocalizedPath(link.pageId, locale)}${link.anchor ?? ''}`,
+        children: link.children?.map(child => ({
+          ...child,
+          href: getLocalizedPath(child.pageId, locale)
+        }))
       })),
     [locale, navContent]
   );
@@ -37,17 +43,40 @@ export default function SiteHeader() {
     <header className="site-header">
       <div className="container nav">
         <Link href={getLocalizedPath('home', locale)} className="brand" aria-label={navContent.brandLabel}>
-          <Image src="/assets/images/Logo-SmaRTechnik.svg" alt="smaRTtechnik Logo" width={160} height={48} />
+          <Image src="/assets/images/Logo-SmaRTechnik.svg" alt="smaRTtechnik Logo" width={160} height={64} />
           <span className="brand-text">smaRTtechnik</span>
         </Link>
 
         <nav className={`nav-links-wrapper ${open ? 'is-open' : ''}`} aria-label="Hauptnavigation">
           <div className="nav-links">
             {localizedNav.map((link) => (
-              <Link key={link.href} href={link.href} className="nav-link" onClick={() => setOpen(false)}>
-                {link.label}
-              </Link>
+              <div key={link.href} className="nav-item-group">
+                <Link 
+                  href={link.href} 
+                  className="nav-link" 
+                  onClick={() => !link.children && setOpen(false)}
+                >
+                  {link.label}
+                </Link>
+                
+                {/* Renderowanie Dropdown, jeśli są podstrony */}
+                {link.children && link.children.length > 0 && (
+                  <div className="dropdown-menu">
+                    {link.children.map((child) => (
+                      <Link 
+                        key={child.href} 
+                        href={child.href} 
+                        className="dropdown-link"
+                        onClick={() => setOpen(false)}
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
+            
             <div className="lang-switch lang-switch--header" aria-label="Language selection">
               {localeSwitchLinks.map((loc) => (
                 <Link

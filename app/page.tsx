@@ -57,15 +57,13 @@ const galleryCopy: Record<
 };
 
 function buildJsonLd(locale: Locale) {
-  // POPRAWKA: Użyj domyślnego języka, jeśli wybrany nie istnieje
   const t = homeContent[locale] || homeContent[defaultLocale];
-  
-  // Zabezpieczenie krytyczne: jeśli nadal nie ma treści, zwróć pusty obiekt, aby nie zepsuć strony
+
   if (!t) return {};
 
   const pageUrl = getAbsoluteUrl('home', locale);
   const imageUrl = 'https://smarttechnik.eu/assets/images/glasfaser-ausbau-frankfurt-skyline-hero.webp';
-  
+
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -140,15 +138,15 @@ function buildJsonLd(locale: Locale) {
         '@id': `${pageUrl}#faq`,
         url: pageUrl,
         inLanguage: locale,
-        // Używamy optional chaining (?.) dla bezpieczeństwa
-        mainEntity: t.faq?.items?.map((item) => ({
-          '@type': 'Question',
-          name: item.question,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: item.answer
-          }
-        })) || []
+        mainEntity:
+          t.faq?.items?.map((item) => ({
+            '@type': 'Question',
+            name: item.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: item.answer
+            }
+          })) || []
       },
       {
         '@type': 'BreadcrumbList',
@@ -170,19 +168,40 @@ export const metadata: Metadata = getMetadataForPage('home', defaultLocale);
 
 export default function HomePage({ params }: { params?: { locale?: Locale } } = {}) {
   const locale = (params?.locale as Locale) ?? defaultLocale;
-  
-  // POPRAWKA: Pobieranie treści z fallbackiem
   const t = homeContent[locale] || homeContent[defaultLocale];
 
-  // Jeśli nawet domyślny język nie działa, zwróć null (lub komponent błędu), aby nie wywołać crasha
   if (!t) {
     console.error(`Błąd krytyczny: Brak tłumaczeń dla języka ${locale} oraz domyślnego.`);
-    return null; 
+    return null;
   }
 
   const jsonLd = buildJsonLd(locale);
-  const heroHighlights = t.hero.bullets.slice(0, 2);
-  const heroPills = t.hero.bullets.slice(2);
+
+  // --- NOWY KOMPONENT HERO: Definicja ikon SVG ---
+  const icons = [
+    // Ikona 1: Światłowód (Fiber)
+    <svg viewBox="0 0 24 24" key="fiber" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+    </svg>,
+    
+    // Ikona 2: Sieć / Wi-Fi (POPRAWIONA)
+    <svg viewBox="0 0 24 24" key="wifi" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15.75a3.75 3.75 0 017.5 0M5.25 12.75a8.25 8.25 0 0113.5 0M2.25 9.75a12.75 12.75 0 0119.5 0" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+    </svg>,
+
+    // Ikona 3: Pomiary (OTDR)
+    <svg viewBox="0 0 24 24" key="otdr" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+    </svg>,
+
+    // Ikona 4: Serwis / Narzędzia
+    <svg viewBox="0 0 24 24" key="service" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.423 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.423 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437" />
+    </svg>
+  ];
+  // --- KONIEC DEFINICJI IKON ---
+
   const servicesMedia = [
     {
       src: '/img/glasfaser-spleisskassette-spleissarbeiten-detail.webp',
@@ -226,6 +245,7 @@ export default function HomePage({ params }: { params?: { locale?: Locale } } = 
       <script id="smarttechnik-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <section className="hero hero--neon" id="top">
+        {/* Tło (Image i SVG) pozostaje bez zmian, aby było widoczne pod nową treścią */}
         <div className="hero__bg">
           <Image
             src="/img/glasfaser-ausbau-frankfurt-skyline-hero.webp"
@@ -249,42 +269,60 @@ export default function HomePage({ params }: { params?: { locale?: Locale } } = 
             <path className="fiber-line" d="M0 600 C 280 580, 560 560, 840 600 S 1220 700, 1440 600" stroke="url(#fiberGradient)" strokeWidth="2" fill="none" />
           </svg>
         </div>
-        <div className="container hero-content hero-content--center">
-          <div className="hero__copy">
-            <span className="eyebrow eyebrow--ghost">{t.hero.eyebrow}</span>
-            <h1 className="hero__headline">{t.hero.title}</h1>
-            <p className="hero__lead">{t.hero.lead}</p>
 
-            <div className="hero-glass">
-              {heroHighlights.map((item) => (
-                <div key={item} className="hero-glass-card">
-                  <span className="hero-badge__dot" aria-hidden="true" />
-                  <span>{item}</span>
+        {/* --- NOWA STRUKTURA TREŚCI HERO (Gemini Style) --- */}
+        <div className="container">
+          {/* Używamy diva z klasą hero-gemini wewnątrz istniejącej sekcji */}
+          <div className="hero-gemini">
+            {/* Eyebrow / "Pigułka" na górze */}
+            <span className="hero-gemini__tag">
+              {t.hero.eyebrow}
+            </span>
+
+            {/* Nagłówek - Centered */}
+            <h1 className="hero-gemini__headline">
+              {t.hero.title}
+            </h1>
+
+            {/* Lead Text */}
+            <p className="hero-gemini__lead">
+              {t.hero.lead}
+            </p>
+
+            {/* OKRĄGŁE IKONY (Grid) */}
+            <div className="hero-gemini__icons-grid">
+              {t.hero.bullets.map((item, index) => (
+                <div key={index} className="hero-gemini__item">
+                  {/* Okrąg z efektem szkła */}
+                  <div className="hero-gemini__circle">
+                    {/* Wybierz ikonę z tablicy icons, fallback do ostatniej */}
+                    {icons[index] || icons[3]}
+                  </div>
+                  {/* Tekst pod ikoną */}
+                  <span className="hero-gemini__label">
+                    {item}
+                  </span>
                 </div>
               ))}
             </div>
-            {heroPills.length > 0 && (
-              <div className="hero-pills">
-                {heroPills.map((item) => (
-                  <span key={item} className="hero-pill">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            )}
-            <div className="hero-actions hero-actions--center">
-              <Link href="#kontakt" className="btn-primary btn-primary--wide">
+
+            {/* Przyciski */}
+            <div className="hero-gemini__actions">
+              <Link href="#kontakt" className="btn-primary">
                 {t.hero.primaryCta}
               </Link>
-              <Link href="#leistungen" className="btn-secondary btn-secondary--outline">
+              {/* Nowa klasa dla drugiego przycisku */}
+              <Link href="#leistungen" className="btn-gemini-outline">
                 {t.hero.secondaryCta}
               </Link>
             </div>
           </div>
         </div>
+        {/* --- KONIEC NOWEJ STRUKTURY TREŚCI --- */}
       </section>
 
       <section className="section services" id="leistungen">
+        {/* ... reszta sekcji bez zmian ... */}
         <div className="container">
           <header className="section-header">
             <h2>{t.leistungen.title}</h2>

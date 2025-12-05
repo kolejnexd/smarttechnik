@@ -31,7 +31,7 @@ export default function RootLayout({
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
-         <SpeedInsights />
+        <SpeedInsights />
       </body>
     </html>
   );
