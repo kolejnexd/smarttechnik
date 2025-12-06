@@ -1,15 +1,16 @@
-'use client';
-
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { getLocaleFromPath } from '../../lib/i18n';
+import { defaultLocale, Locale } from '../../lib/i18n';
 import { ueberUnsContent } from '../../lib/content/ueber-uns';
-import { getLocalizedPathWithAnchor } from '../../lib/seo-config';
+import { getLocalizedPathWithAnchor, getMetadataForPage } from '../../lib/seo-config';
 
-export default function UeberUnsPage() {
-  const pathname = usePathname() || '/';
-  const locale = getLocaleFromPath(pathname);
+export const metadata: Metadata = getMetadataForPage('ueber-uns', defaultLocale);
+
+type PageProps = { params: { locale?: Locale } };
+
+export default function UeberUnsPage({ params }: PageProps) {
+  const locale = params.locale ?? defaultLocale;
   const t = ueberUnsContent[locale];
   
   const link = (pageId: Parameters<typeof getLocalizedPathWithAnchor>[0], anchor?: string) =>
@@ -47,7 +48,7 @@ export default function UeberUnsPage() {
             
             <div className="hero-about__image-wrapper">
               <Image
-                src="/img/Über-uns-smaRTtechnik.webp" 
+                src="/img/Über-uns-smaRTtechnik.webp" 
                 alt="smaRTtechnik Team bei der Arbeit"
                 fill
                 className="hero-about__img"

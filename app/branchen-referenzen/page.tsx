@@ -1,11 +1,9 @@
-'use client';
-
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { getLocaleFromPath } from '../../lib/i18n';
+import { defaultLocale, Locale } from '../../lib/i18n';
 import { branchenReferenzenContent } from '../../lib/content/branchen-referenzen';
-import { getLocalizedPathWithAnchor } from '../../lib/seo-config';
+import { getLocalizedPathWithAnchor, getMetadataForPage } from '../../lib/seo-config';
 
 // Komponent dekoracyjny: Linia łącząca
 const ConnectorLine = () => (
@@ -32,11 +30,13 @@ const ConnectorLine = () => (
   </svg>
 );
 
-export default function BranchenReferenzenPage() {
-  const pathname = usePathname() || '/';
-  const locale = getLocaleFromPath(pathname);
+export const metadata: Metadata = getMetadataForPage('branchen-referenzen', defaultLocale);
+
+type PageProps = { params: { locale?: Locale } };
+
+export default function BranchenReferenzenPage({ params }: PageProps) {
+  const locale = params.locale ?? defaultLocale;
   const t = branchenReferenzenContent[locale];
-  
   const buildLink = (pageId: Parameters<typeof getLocalizedPathWithAnchor>[0], anchor?: string) =>
     getLocalizedPathWithAnchor(pageId, locale, anchor);
 
@@ -238,7 +238,7 @@ export default function BranchenReferenzenPage() {
               <a href="mailto:info@smarttechnik.eu">info@smarttechnik.eu</a>
             </p>
           </div>
-        </div>
+          </div>
       </section>
     </>
   );

@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
-import { defaultLocale, type Locale, languageAlternates } from '../lib/i18n';
+import { defaultLocale, type Locale, languageAlternates, getLocaleFromPath } from '../lib/i18n';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { headers } from 'next/headers';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://smarttechnik.eu'),
@@ -17,13 +18,24 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-  params
+  children
 }: {
   children: React.ReactNode;
-  params: { locale?: Locale };
 }) {
-  const locale = params?.locale ?? defaultLocale;
+  const headerList = headers();
+  const pathHeader =
+    headerList.get('x-invoke-path') ||
+    headerList.get('x-next-url') ||
+    headerList.get('referer') ||
+    '/';
+  const locale: Locale = (() => {
+    try {
+      const pathname = new URL(pathHeader, 'http://localhost').pathname;
+      return getLocaleFromPath(pathname);
+    } catch {
+      return defaultLocale;
+    }
+  })();
 
   return (
     <html lang={locale}>

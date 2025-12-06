@@ -101,8 +101,10 @@ function buildJsonLd(locale: Locale) {
 
 export const metadata: Metadata = getMetadataForPage('messtechnik-fehlersuche', defaultLocale);
 
-export default function MesstechnikFehlersuchePage({ params }: { params?: { locale?: Locale } } = {}) {
-  const locale = (params?.locale as Locale) ?? defaultLocale;
+type PageProps = { params: { locale?: Locale } };
+
+export default function MesstechnikFehlersuchePage({ params }: PageProps) {
+  const locale = params.locale ?? defaultLocale;
   const jsonLd = buildJsonLd(locale);
   const t = messtechnikFehlersucheContent[locale];
   const link = (pageId: Parameters<typeof getLocalizedPathWithAnchor>[0], anchor?: string) =>
@@ -280,4 +282,3 @@ export default function MesstechnikFehlersuchePage({ params }: { params?: { loca
     </>
   );
 }
-

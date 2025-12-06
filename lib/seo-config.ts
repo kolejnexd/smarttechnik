@@ -207,10 +207,6 @@ function combinePath(locale: Locale, slug?: string): string {
   return cleanSlug ? `/${locale}/${cleanSlug}` : `/${locale}`;
 }
 
-export function getPageSeo(pageId: PageId, locale: Locale): SeoEntry {
-  return seoConfig[pageId];
-}
-
 export function getLocalizedPath(pageId: PageId, locale: Locale): string {
   const entry = seoConfig[pageId];
   const safeLocale = locales.includes(locale) ? locale : defaultLocale;

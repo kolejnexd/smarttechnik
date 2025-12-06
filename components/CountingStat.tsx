@@ -23,7 +23,6 @@ export default function CountingStat({ value }: CountingStatProps) {
 
     const target = Number(match[1].replace(',', '.'));
     const suffix = match[2] ?? '';
-    let start = 0;
     let startTime: number | null = null;
 
     const observer = new IntersectionObserver(

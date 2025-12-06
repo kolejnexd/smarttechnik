@@ -166,8 +166,10 @@ function buildJsonLd(locale: Locale) {
 
 export const metadata: Metadata = getMetadataForPage('home', defaultLocale);
 
-export default function HomePage({ params }: { params?: { locale?: Locale } } = {}) {
-  const locale = (params?.locale as Locale) ?? defaultLocale;
+type PageProps = { params: { locale?: Locale } };
+
+export default function HomePage({ params }: PageProps) {
+  const locale = params.locale ?? defaultLocale;
   const t = homeContent[locale] || homeContent[defaultLocale];
 
   if (!t) {

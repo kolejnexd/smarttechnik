@@ -101,8 +101,10 @@ function buildJsonLd(locale: Locale) {
 
 export const metadata: Metadata = getMetadataForPage('netzwerktechnik-wlan', defaultLocale);
 
-export default function NetzwerktechnikPage({ params }: { params?: { locale?: Locale } } = {}) {
-  const locale = (params?.locale as Locale) ?? defaultLocale;
+type PageProps = { params: { locale?: Locale } };
+
+export default function NetzwerktechnikPage({ params }: PageProps) {
+  const locale = params.locale ?? defaultLocale;
   const jsonLd = buildJsonLd(locale);
   const t = netzwerktechnikWlanContent[locale];
   const link = (pageId: Parameters<typeof getLocalizedPathWithAnchor>[0], anchor?: string) =>
@@ -267,8 +269,8 @@ export default function NetzwerktechnikPage({ params }: { params?: { locale?: Lo
             </Link>
           </div>
           <p className="kontakt-inline">
-            Direktkontakt: <a href={`tel:${t.contact.phones[0].replace(/\\s+/g, '')}`}>{t.contact.phones[0]}</a> ·{' '}
-            <a href={`tel:${t.contact.phones[1].replace(/\\s+/g, '')}`}>{t.contact.phones[1]}</a> ·{' '}
+            Direktkontakt: <a href={`tel:${t.contact.phones[0].replace(/\s+/g, '')}`}>{t.contact.phones[0]}</a> ·{' '}
+            <a href={`tel:${t.contact.phones[1].replace(/\s+/g, '')}`}>{t.contact.phones[1]}</a> ·{' '}
             <a href={`mailto:${t.contact.email}`}>{t.contact.email}</a>
           </p>
         </div>

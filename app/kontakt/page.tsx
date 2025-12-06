@@ -160,10 +160,9 @@ export default function KontaktPage({ params }: { params?: { locale?: Locale } }
           <header>
             <h2>{t.stoerungTitle}</h2>
           </header>
-          <p>
-            Für Kunden mit <Link href={link('service-wartung')}>Service- &amp; Wartungsvertrag</Link>{' '}
-            bieten wir definierte Reaktionszeiten und nach Vereinbarung eine{' '}
-            <strong>Störungsbereitschaft (optional 24/7)</strong>.
+          <p>{t.stoerungIntro}</p>
+          <p className="inline-note">
+            <Link href={link('service-wartung')}>Mehr zu Service- &amp; Wartungsverträgen</Link>
           </p>
           <p>Bitte halten Sie bei Störungen nach Möglichkeit folgende Informationen bereit:</p>
           <ul>
@@ -206,7 +205,6 @@ export default function KontaktPage({ params }: { params?: { locale?: Locale } }
           <header>
             <h2>{t.termineTitle}</h2>
           </header>
-          <p>{t.termineIntro}</p>
           <p>{t.termineIntro}</p>
         </div>
       </section>
